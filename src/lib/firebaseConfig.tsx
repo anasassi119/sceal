@@ -1,6 +1,6 @@
 // lib/firebaseConfig.ts
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import {getAuth, Auth, browserSessionPersistence, setPersistence} from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -15,4 +15,6 @@ const firebaseConfig = {
 const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
 export const auth: Auth = getAuth(app);
+await setPersistence(auth, browserSessionPersistence);
+
 export const storage: FirebaseStorage = getStorage(app);

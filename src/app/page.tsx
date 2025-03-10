@@ -10,6 +10,11 @@ export default function Home() {
     const { user, login } = useAuth();
 
     useEffect(() => {
+        document.cookie = "cross-site-cookie=bar; SameSite=None; Secure";
+    }, []);
+
+
+    useEffect(() => {
         if (user) router.push('/dashboard');
     }, [user, router]);
 
