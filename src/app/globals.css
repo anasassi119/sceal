@@ -12,6 +12,10 @@
     overflow: auto;
 }
 
+.p-fileupload-buttonbar {
+    justify-content: center;
+}
+
 .p-menubar-button, .rhap_repeat-button {
     display: none;
 }
