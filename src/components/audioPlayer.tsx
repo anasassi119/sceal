@@ -37,7 +37,13 @@ export default function AudioPlayer(audio: Audio) {
     };
 
     const togglePlayPause = () => {
-        wavesurferRef.current?.playPause();
+        if (wavesurferRef.current) {
+            if (isPlaying) {
+                wavesurferRef.current.pause();
+            } else {
+                wavesurferRef.current.play();
+            }
+        }
     };
 
     return (

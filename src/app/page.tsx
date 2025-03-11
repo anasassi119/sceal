@@ -3,16 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import {FaGoogle} from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 
 export default function Home() {
     const router = useRouter();
     const { user, login } = useAuth();
-
-    useEffect(() => {
-        document.cookie = "cross-site-cookie=bar; SameSite=None; Secure";
-    }, []);
-
 
     useEffect(() => {
         if (user) router.push('/dashboard');

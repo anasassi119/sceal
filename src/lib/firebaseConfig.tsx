@@ -1,7 +1,7 @@
 // lib/firebaseConfig.ts
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import {getAuth, Auth, browserSessionPersistence, setPersistence} from 'firebase/auth';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, browserSessionPersistence, setPersistence } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -12,9 +12,8 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const auth = getAuth(app);
+export const storage = getStorage(app);
 
-export const auth: Auth = getAuth(app);
-await setPersistence(auth, browserSessionPersistence);
-
-export const storage: FirebaseStorage = getStorage(app);
+await setPersistence(auth, browserSessionPersistence)
