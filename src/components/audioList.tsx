@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { storage } from "@/lib/firebaseConfig";
 import { ref, list, getDownloadURL, deleteObject } from "firebase/storage";
 import { User } from "firebase/auth";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { VirtualScroller } from "primereact/virtualscroller";
 import AudioPlayer from "@/components/audioPlayer";
 
 interface Audio {
@@ -25,23 +24,20 @@ export default function AudioList({ user }: AudioListProps) {
     const [nextPageToken, setNextPageToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
-    const scrollerRef = useRef<VirtualScroller>(null);
+    const observerRef = useRef<IntersectionObserver | null>(null);
 
     useEffect(() => {
-        const fetchStuff = async () => {
-           await fetchAudios();
-        }
-        fetchStuff()
+        fetchAudios();
     }, []);
 
-    // 🔥 Fetch files with pagination and avoid duplicates
+    // Fetch audio files from Firebase Storage with pagination
     const fetchAudios = async (pageToken: string | null = null) => {
         if (!user || isLoading || (pageToken === null && audios.length > 0)) return;
         setIsLoading(true);
 
         try {
             const storageRef = ref(storage, `audios/${user.uid}/`);
-            const options = { maxResults: 5, pageToken: pageToken || undefined };
+            const options = { maxResults: 10, pageToken: pageToken || undefined };
             const result = await list(storageRef, options);
 
             const audioPromises = result.items.map(async (item) => ({
@@ -56,12 +52,8 @@ export default function AudioList({ user }: AudioListProps) {
                 uniqueAudios.forEach(audio => fetchedFilesRef.current.add(audio.name));
             }
 
-            if (result.nextPageToken) {
-                setNextPageToken(result.nextPageToken);
-            } else {
-                setNextPageToken(null);
-            }
-
+            setNextPageToken(result.nextPageToken || null);
+            console.log(result.nextPageToken);
         } catch (error) {
             console.error("Error fetching files:", error);
         }
@@ -69,12 +61,21 @@ export default function AudioList({ user }: AudioListProps) {
         setIsLoading(false);
     };
 
-    const onLazyLoad = () => {
-        if (nextPageToken !== null && !isLoading) {
-            fetchAudios(nextPageToken);
-            console.log("rabbbb")
-        }
-    };
+    const lastRowRef = useCallback(
+        (node: HTMLTableRowElement | null) => {
+            if (isLoading) return;
+            if (observerRef.current) observerRef.current.disconnect();
+
+            observerRef.current = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && nextPageToken) {
+                    fetchAudios(nextPageToken);
+                }
+            });
+
+            if (node) observerRef.current.observe(node);
+        },
+        [isLoading, nextPageToken]
+    );
 
     const confirmDelete = (filePath: string) => {
         confirmDialog({
@@ -87,15 +88,11 @@ export default function AudioList({ user }: AudioListProps) {
         });
     };
 
-    // 🔥 Delete File
     const deleteFile = async (filePath: string) => {
         try {
-            console.log(filePath);
             const fileRef = ref(storage, filePath);
             await deleteObject(fileRef);
-
-            setAudios((prevAudios) => prevAudios.filter(audio => audio.url !== filePath));
-
+            setAudios((prev) => prev.filter(audio => audio.url !== filePath));
             fetchedFilesRef.current.delete(filePath);
 
             toast.current?.show({ severity: "success", summary: "Deleted", detail: "File removed successfully!" });
@@ -105,54 +102,55 @@ export default function AudioList({ user }: AudioListProps) {
         }
     };
 
-    const itemTemplate = (audio: Audio) => (
-        <div className="grid grid-cols-[200px_1fr_120px] gap-5 items-center w-full border-b-1 border-blue-200">
-            <div className="overflow-hidden">
-                <p>{audio.name}</p>
-            </div>
-            <AudioPlayer name={audio.name} url={audio.url} />
-            <div className="flex gap-2">
-                <a href={`${audio.url}&dl=1`} download={audio.url}>
-                    <Button icon="pi pi-download" className="p-button-sm p-button-text" />
-                </a>
-                <Button
-                    icon="pi pi-trash"
-                    className="p-button-danger p-button-sm p-button-text"
-                    onClick={() => confirmDelete(audio.url)}
-                />
-            </div>
-        </div>
-    );
-
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center gap-5">
-                <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
-                Loading
-            </div>
-        );
-    }
-
-    if (!isLoading && audios.length === 0) {
-        return <div>There are no audios yet.. try uploading a few</div>
-    }
-
     return (
         <div>
             <Toast ref={toast} />
             <ConfirmDialog />
-            <VirtualScroller
-                className="w-full h-130"
-                ref={scrollerRef}
-                items={audios}
-                itemSize={120}
-                lazy
-                delay={150}
-                orientation="vertical"
-                onLazyLoad={onLazyLoad}
-                itemTemplate={itemTemplate}
-                loading={isLoading}
-            />
+            <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                <thead className="bg-gray-400">
+                <tr>
+                    <th className="p-3 border-0">Audio Name</th>
+                    <th className="p-3 border-0">Play/Pause</th>
+                    <th className="p-3 border-0">Download</th>
+                    <th className="p-3 border-0">Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                {audios.map((audio, index) => (
+                    <tr
+                        key={audio.url}
+                        ref={index === audios.length - 1 ? lastRowRef : null}
+                        className={`border-0 ${
+                            index % 2 === 1 ? "bg-gray-200" : "bg-white"
+                        }`}
+                    >
+                        <td className="border-0 p-3 w-3/12">{audio.name}</td>
+                        <td className="border-0 p-3">
+                            <AudioPlayer name={audio.name} url={audio.url} />
+                        </td>
+                        <td className="border-0 p-3 w-1/12 text-center">
+                            <a href={`${audio.url}&dl=1`} download>
+                                <Button icon="pi pi-download" className="p-button-sm p-button-text" />
+                            </a>
+                        </td>
+                        <td className="border-0 p-3 w-1/12 text-center">
+                            <Button
+                                icon="pi pi-trash"
+                                className="p-button-danger p-button-sm p-button-text"
+                                onClick={() => confirmDelete(audio.url)}
+                            />
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+
+            {isLoading && (
+                <div className="flex justify-center items-center gap-5 mt-4">
+                    <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
+                    Loading...
+                </div>
+            )}
         </div>
     );
 }

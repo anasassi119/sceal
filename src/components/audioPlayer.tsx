@@ -60,7 +60,7 @@ export default function AudioPlayer(audio: Audio) {
                 height={80}
                 barGap={1}
                 barWidth={3}
-                waveColor="#ddd"
+                waveColor="#99a1af"
                 progressColor="#2196F3"
                 url={audio.url}
                 onReady={(ws) => handleWSMount(ws)}
