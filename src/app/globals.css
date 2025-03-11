@@ -12,6 +12,6 @@
     overflow: auto;
 }
 
-.p-menubar-button {
+.p-menubar-button, .rhap_repeat-button {
     display: none;
 }

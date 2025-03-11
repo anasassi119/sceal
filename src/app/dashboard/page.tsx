@@ -15,7 +15,7 @@ export default function Dashboard() {
     const router = useRouter();
     const { user, logout, loading } = useAuth();
     const menuRef = useRef<Menu>(null);
-    const names = user?.displayName?.split(" ") || ["U", "U"]
+    const names = user?.displayName?.split(" ") || ["U", "U"];
     const initials = names.map((name) => name[0].toUpperCase()).join("");
     const [isClient, setIsClient] = useState(false);
 

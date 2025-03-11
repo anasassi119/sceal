@@ -7,7 +7,8 @@ import { User } from "firebase/auth";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import AudioPlayer from "@/components/audioPlayer";
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
 
 interface Audio {
     name: string;
@@ -23,6 +24,7 @@ export default function AudioList({ user }: AudioListProps) {
     const fetchedFilesRef = useRef<Set<string>>(new Set());
     const [nextPageToken, setNextPageToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [playingNow, setPlayingNow] = useState<Audio | null>(null);
     const toast = useRef<Toast>(null);
     const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -108,33 +110,35 @@ export default function AudioList({ user }: AudioListProps) {
             <ConfirmDialog />
             <div className="max-w-full overflow-x-auto rounded-lg">
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                    <thead className="bg-gray-400">
-                    <tr>
-                        <th className="p-3 border-0 w-3/12">Audio Name</th>
-                        <th className="p-3 border-0">Play/Pause</th>
-                        <th className="p-3 border-0 w-1/12">Download</th>
-                        <th className="p-3 border-0 w-1/12">Delete</th>
-                    </tr>
-                    </thead>
+                    {/*<thead className="bg-gray-400">*/}
+                    {/*<tr>*/}
+                    {/*    <th className="p-3 border-0 w-3/12">Audio Name</th>*/}
+                    {/*    /!*<th className="p-3 border-0">Play/Pause</th>*!/*/}
+                    {/*    <th className="p-3 border-0 w-1/12">Download</th>*/}
+                    {/*</tr>*/}
+                    {/*</thead>*/}
                     <tbody>
                     {audios.map((audio, index) => (
                         <tr
                             key={audio.url}
                             ref={index === audios.length - 1 ? lastRowRef : null}
-                            className={`border-0 ${
-                                index % 2 === 1 ? "bg-gray-200" : "bg-white"
-                            }`}
+                            className={`border-0 h-10 ${
+                                index % 2 === 1 ? "bg-white" : "bg-gray-200"
+                            } hover:cursor-pointer`}
+                            onClick={() => {
+                                setPlayingNow(audio)
+                            }
+                        }
                         >
-                            <td className="border-0 p-3 w-3/12">{audio.name}</td>
-                            <td className="border-0 p-3">
-                                <AudioPlayer name={audio.name} url={audio.url} />
+                            <td className="border-0 p-3 w-3/12 overflow-hidden whitespace-nowrap relative">
+                                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-scroll">
+                                    {audio.name}
+                                </div>
                             </td>
                             <td className="border-0 p-3 w-1/12 text-center">
                                 <a href={`${audio.url}&dl=1`} download>
                                     <Button icon="pi pi-download" className="p-button-sm p-button-text" />
                                 </a>
-                            </td>
-                            <td className="border-0 p-3 w-1/12 text-center">
                                 <Button
                                     icon="pi pi-trash"
                                     className="p-button-danger p-button-sm p-button-text"
@@ -146,7 +150,21 @@ export default function AudioList({ user }: AudioListProps) {
                     </tbody>
                 </table>
             </div>
-
+            <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-3/4 w-9/10 h-20">
+                <AudioPlayer
+                    autoPlayAfterSrcChange
+                    showJumpControls={false}
+                    showSkipControls={false}
+                    src={playingNow?.url}
+                    header={
+                        (
+                            <div className="h-10 text-center overflow-hidden whitespace-nowrap">
+                                {playingNow?.name || 'No Audio Playing'}
+                            </div>
+                        )
+                    }
+                />
+            </div>
             {isLoading && (
                 <div className="flex justify-center items-center gap-5 mt-4">
                     <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
