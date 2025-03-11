@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import {
     GoogleAuthProvider,
@@ -10,53 +10,74 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
 
+// Initialize Google provider
 const provider = new GoogleAuthProvider();
 
 export function useAuth() {
     const [user, loading, error] = useAuthState(auth);
     const [initialized, setInitialized] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
+    // Detect Safari on client-side only
     const [isSafari, setIsSafari] = useState(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+            setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+                /iPhone|iPad|iPod/i.test(navigator.userAgent));
         }
     }, []);
 
+    // Process redirect result as soon as component mounts
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, () => {
+        if (typeof window !== 'undefined') {
+            const processRedirect = async () => {
+                try {
+                    const result = await getRedirectResult(auth);
+                    if (result) {
+                        console.log("Redirect sign-in successful");
+                        // Redirect completed successfully
+                    }
+                } catch (error) {
+                    console.error("Redirect sign-in error:", error);
+                } finally {
+                    setInitialized(true);
+                }
+            };
+
+            processRedirect();
+        }
+    }, []);
+
+    // Set up auth state listener
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log("Auth State Changed:", user ? "User logged in" : "No user");
             setInitialized(true);
         });
 
         return () => unsubscribe();
     }, []);
 
-    // Handle redirect login results
-    useEffect(() => {
-        if (!initialized || typeof window === 'undefined') return;
-
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result?.user) {
-                }
-            })
-            .catch(() => {
-            });
-    }, [initialized]);
-
-    const login = async () => {
+    const login = useCallback(async () => {
         try {
-            // Use redirect for Safari and mobile, popup for others
             if (isSafari || window.innerWidth < 768) {
+                setIsRedirecting(true);
+                // Add state parameter to track that we're in a redirect flow
+                provider.setCustomParameters({
+                    // You can add any needed state parameters
+                    state: `redirect-${Date.now()}`
+                });
                 await signInWithRedirect(auth, provider);
+                // Code after this point won't execute until after redirect completes
             } else {
                 await signInWithPopup(auth, provider);
             }
         } catch (error) {
             console.error("Login error:", error);
+            setIsRedirecting(false);
         }
-    };
+    }, [isSafari]);
 
     const logout = async () => {
         await signOut(auth);
@@ -64,7 +85,7 @@ export function useAuth() {
 
     return {
         user,
-        loading: loading || !initialized,
+        loading: loading || !initialized || isRedirecting,
         error,
         login,
         logout,
