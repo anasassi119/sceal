@@ -4,6 +4,7 @@ import "./globals.css";
 import 'primereact/resources/themes/lara-light-blue/theme.css'; // theme
 import 'primereact/resources/primereact.min.css';                // core css
 import 'primeicons/primeicons.css';
+import {AuthProvider} from "@/components/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+      <AuthProvider>
+          {children}
+      </AuthProvider>
       </body>
     </html>
   );

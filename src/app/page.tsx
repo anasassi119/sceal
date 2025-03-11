@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import {FaGoogle} from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 
 export default function Home() {
     const router = useRouter();

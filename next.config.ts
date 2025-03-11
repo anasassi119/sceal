@@ -1,21 +1,33 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig: import('next').NextConfig = {
     async headers() {
         return [
             {
                 source: "/(.*)",
                 headers: [
                     {
-                        key: "Cross-Origin-Opener-Policy",
-                        value: "same-origin-allow-popups",
-                    },
-                    {
-                        key: "Cross-Origin-Embedder-Policy",
-                        value: "require-corp",
+                        key: "Content-Security-Policy",
+                        value: "frame-ancestors 'self' https://accounts.google.com https://*.firebaseapp.com;",
                     },
                 ],
             },
+            {
+                source: "/api/(.*)",
+                headers: [
+                    {
+                        key: "Access-Control-Allow-Origin",
+                        value: "*",
+                    },
+                    {
+                        key: "Access-Control-Allow-Methods",
+                        value: "GET, POST, PUT, DELETE, OPTIONS",
+                    },
+                    {
+                        key: "Access-Control-Allow-Headers",
+                        value: "Content-Type, Authorization",
+                    },
+                ],
+            }
         ];
     },
 };

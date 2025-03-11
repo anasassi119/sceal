@@ -2,7 +2,7 @@
 // app/layout.tsx
 
 import { useRouter } from 'next/navigation';
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import UploadForm from '@/components/uploadForm';
 import AudioList from '@/components/audioList';
@@ -17,13 +17,16 @@ export default function Dashboard() {
     const menuRef = useRef<Menu>(null);
     const names = user?.displayName?.split(" ") || ["U", "U"]
     const initials = names.map((name) => name[0].toUpperCase()).join("");
+    const [isClient, setIsClient] = useState(false);
+
     useEffect(() => {
+        setIsClient(true);
         if (!loading && !user) {
             router.push('/');
         }
     }, [user, loading, router]);
 
-    if (loading || !user) {
+    if (!isClient || loading || !user) {
         return (
             <div className="flex justify-center items-center w-screen h-screen gap-5">
                 <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
