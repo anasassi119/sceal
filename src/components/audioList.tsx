@@ -106,7 +106,7 @@ export default function AudioList({ user }: AudioListProps) {
         <div>
             <Toast ref={toast} />
             <ConfirmDialog />
-            <div className="max-w-full overflow-x-auto">
+            <div className="max-w-full overflow-x-auto rounded-lg">
                 <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
                     <thead className="bg-gray-400">
                     <tr>
