@@ -23,7 +23,7 @@ export default function UploadForm({ user }: UploadFormProps) {
     const toast = useRef<Toast>(null);
     const fileUploadRef = useRef<FileUpload>(null);
     const [progress, setProgress] = useState<number>(0);
-    const [customFileName, setCustomFileName] = useState<string>(`recording-${Date.now()}.mp3`); // ✅ Custom name state
+    const [customFileName, setCustomFileName] = useState<string>(`recording-${Date.now()}`); // ✅ Custom name state
     const [fileExtension, setFileExtension] = useState<string>('mp3');
 
     const startRecording = async () => {

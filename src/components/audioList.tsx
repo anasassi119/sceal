@@ -7,8 +7,10 @@ import { User } from "firebase/auth";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import AudioPlayer from 'react-h5-audio-player';
+import AudioPlayer, {RHAP_UI} from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
+import {HiOutlineDotsVertical} from "react-icons/hi";
+import {OverlayPanel} from "primereact/overlaypanel";
 
 interface Audio {
     name: string;
@@ -22,6 +24,7 @@ interface AudioListProps {
 export default function AudioList({ user }: AudioListProps) {
     const [audios, setAudios] = useState<Audio[]>([]);
     const fetchedFilesRef = useRef<Set<string>>(new Set());
+    const overlayRef = useRef<OverlayPanel | null>(null);
     const [nextPageToken, setNextPageToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [playingNow, setPlayingNow] = useState<Audio | null>(null);
@@ -96,7 +99,7 @@ export default function AudioList({ user }: AudioListProps) {
             await deleteObject(fileRef);
             setAudios((prev) => prev.filter(audio => audio.url !== filePath));
             fetchedFilesRef.current.delete(filePath);
-
+            setPlayingNow(null)
             toast.current?.show({ severity: "success", summary: "Deleted", detail: "File removed successfully!" });
         } catch (error) {
             console.error("Error deleting file:", error);
@@ -108,21 +111,27 @@ export default function AudioList({ user }: AudioListProps) {
         <div>
             <Toast ref={toast} />
             <ConfirmDialog />
-            <div className="max-w-full overflow-x-auto rounded-lg">
-                <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                    {/*<thead className="bg-gray-400">*/}
-                    {/*<tr>*/}
-                    {/*    <th className="p-3 border-0 w-3/12">Audio Name</th>*/}
-                    {/*    /!*<th className="p-3 border-0">Play/Pause</th>*!/*/}
-                    {/*    <th className="p-3 border-0 w-1/12">Download</th>*/}
-                    {/*</tr>*/}
-                    {/*</thead>*/}
+            <OverlayPanel ref={overlayRef}>
+                <div>
+                    <a href={`${playingNow?.url || ''}&dl=1`} download>
+                        <Button icon="pi pi-download" className="p-button-sm p-button-text" />
+                    </a>
+                    <Button
+                        icon="pi pi-trash"
+                        className="p-button-danger p-button-sm p-button-text"
+                        onClick={() => confirmDelete(playingNow?.url || '')}
+                    />
+                </div>
+            </OverlayPanel>
+            <div className="max-w-full overflow-x-auto rounded-lg rounded-br-none rounded-bl-none">
+                <table className="w-full border-collapse border border-gray-300 rounded-lg rounded-br-none rounded-bl-none
+                overflow-hidden">
                     <tbody>
                     {audios.map((audio, index) => (
                         <tr
                             key={audio.url}
                             ref={index === audios.length - 1 ? lastRowRef : null}
-                            className={`border-0 h-10 ${
+                            className={`border-0 h-15 ${
                                 index % 2 === 1 ? "bg-white" : "bg-gray-200"
                             } hover:cursor-pointer`}
                             onClick={() => {
@@ -135,23 +144,15 @@ export default function AudioList({ user }: AudioListProps) {
                                     {audio.name}
                                 </div>
                             </td>
-                            <td className="border-0 p-3 w-1/12 text-center">
-                                <a href={`${audio.url}&dl=1`} download>
-                                    <Button icon="pi pi-download" className="p-button-sm p-button-text" />
-                                </a>
-                                <Button
-                                    icon="pi pi-trash"
-                                    className="p-button-danger p-button-sm p-button-text"
-                                    onClick={() => confirmDelete(audio.url)}
-                                />
-                            </td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
             </div>
-            <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-3/4 w-9/10 h-20">
+            <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-3/4 w-full h-20
+                            pt-0 pb-0 pl-5 pr-5">
                 <AudioPlayer
+                    className="relative"
                     autoPlayAfterSrcChange
                     showJumpControls={false}
                     showSkipControls={false}
@@ -163,6 +164,17 @@ export default function AudioList({ user }: AudioListProps) {
                             </div>
                         )
                     }
+                    customControlsSection={[
+                        RHAP_UI.ADDITIONAL_CONTROLS,
+                        <div className="fixed left-10" key="extra-controls">
+                            <button style={{color: "#868686"}} className="text-xl cursor-pointer"
+                                    onClick={(e) => overlayRef.current?.toggle(e)}>
+                                <HiOutlineDotsVertical />
+                            </button>
+                        </div>,
+                        RHAP_UI.MAIN_CONTROLS,
+                        RHAP_UI.VOLUME_CONTROLS,
+                    ]}
                 />
             </div>
             {isLoading && (

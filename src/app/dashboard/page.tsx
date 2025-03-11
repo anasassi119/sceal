@@ -59,7 +59,7 @@ export default function Dashboard() {
                     <UploadForm user={user} />
                 </TabPanel>
                 <TabPanel header="My Uploaded Audios" leftIcon="pi pi-headphones">
-                    <AudioList user={user} />
+                    <div className="h-[calc(100vh-300px)] overflow-auto"><AudioList user={user} /></div>
                 </TabPanel>
             </TabView>
         </div>
