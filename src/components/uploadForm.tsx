@@ -86,9 +86,9 @@ export default function UploadForm({ user }: UploadFormProps) {
         );
     };
 
-    const chooseOptions = {className: "min-w-50"}
-    const uploadOptions = {className: "p-button-success min-w-50"}
-    const cancelOptions = {className: "p-button-danger min-w-50"}
+    const chooseOptions = {className: "w-35"}
+    const uploadOptions = {className: "p-button-success min-w-35"}
+    const cancelOptions = {className: "p-button-danger min-w-35"}
 
     const headerTemplate = (options: FileUploadHeaderTemplateOptions) => {
         const { className, chooseButton, uploadButton, cancelButton } = options;
@@ -96,8 +96,8 @@ export default function UploadForm({ user }: UploadFormProps) {
             <div className={className} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 {chooseButton}
                 <Button
-                    className="min-w-50"
-                    label={isRecording ? 'Stop Recording' : 'Record Audio'}
+                    className="min-w-35"
+                    label={isRecording ? 'Stop' : 'Record'}
                     icon={isRecording ? 'pi pi-stop' : 'pi pi-microphone'}
                     severity={isRecording ? 'danger' : undefined}
                     onClick={isRecording ? stopRecording : startRecording}
@@ -127,8 +127,8 @@ export default function UploadForm({ user }: UploadFormProps) {
                 uploadOptions={uploadOptions}
                 cancelOptions={cancelOptions}
                 progressBarTemplate={progressBarTemplate}
-                chooseLabel="Choose Audio"
-                uploadLabel="Start Upload"
+                chooseLabel="Choose"
+                uploadLabel="Upload"
                 accept="audio/*"
                 uploadHandler={customUploadAudio}
                 onSelect={(e) => {
