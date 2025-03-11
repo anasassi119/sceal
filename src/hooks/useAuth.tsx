@@ -3,7 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import {
     GoogleAuthProvider,
     signInWithPopup,
-    signInWithRedirect,
+    // signInWithRedirect,
     signOut,
     onAuthStateChanged,
     getRedirectResult
@@ -17,8 +17,6 @@ export function useAuth() {
     const [user, loading, error] = useAuthState(auth);
     const [initialized, setInitialized] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false);
-
-    // Detect Safari on client-side only
     const [isSafari, setIsSafari] = useState(false);
 
     useEffect(() => {
@@ -61,18 +59,18 @@ export function useAuth() {
 
     const login = useCallback(async () => {
         try {
-            if (isSafari || window.innerWidth < 768) {
-                setIsRedirecting(true);
-                // Add state parameter to track that we're in a redirect flow
-                provider.setCustomParameters({
-                    // You can add any needed state parameters
-                    state: `redirect-${Date.now()}`
-                });
-                await signInWithRedirect(auth, provider);
-                // Code after this point won't execute until after redirect completes
-            } else {
+            // if (isSafari || window.innerWidth < 768) {
+            //     setIsRedirecting(true);
+            //     // Add state parameter to track that we're in a redirect flow
+            //     provider.setCustomParameters({
+            //         // You can add any needed state parameters
+            //         state: `redirect-${Date.now()}`
+            //     });
+            //     await signInWithRedirect(auth, provider);
+            //     // Code after this point won't execute until after redirect completes
+            // } else {
                 await signInWithPopup(auth, provider);
-            }
+            // }
         } catch (error) {
             console.error("Login error:", error);
             setIsRedirecting(false);
