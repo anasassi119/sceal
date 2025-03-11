@@ -25,6 +25,7 @@ export default function UploadForm({ user }: UploadFormProps) {
     const [progress, setProgress] = useState<number>(0);
     const [customFileName, setCustomFileName] = useState<string>(`recording-${Date.now()}.mp3`); // ✅ Custom name state
     const [fileExtension, setFileExtension] = useState<string>('mp3');
+
     const startRecording = async () => {
         audioChunks.current = [];
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -85,8 +86,9 @@ export default function UploadForm({ user }: UploadFormProps) {
         );
     };
 
-    const uploadOptions = {className: "p-button-success"}
-    const cancelOptions = {className: "p-button-danger"}
+    const chooseOptions = {className: "min-w-50"}
+    const uploadOptions = {className: "p-button-success min-w-50"}
+    const cancelOptions = {className: "p-button-danger min-w-50"}
 
     const headerTemplate = (options: FileUploadHeaderTemplateOptions) => {
         const { className, chooseButton, uploadButton, cancelButton } = options;
@@ -94,6 +96,7 @@ export default function UploadForm({ user }: UploadFormProps) {
             <div className={className} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 {chooseButton}
                 <Button
+                    className="min-w-50"
                     label={isRecording ? 'Stop Recording' : 'Record Audio'}
                     icon={isRecording ? 'pi pi-stop' : 'pi pi-microphone'}
                     severity={isRecording ? 'danger' : undefined}
@@ -120,9 +123,10 @@ export default function UploadForm({ user }: UploadFormProps) {
                 ref={fileUploadRef}
                 customUpload
                 headerTemplate={headerTemplate}
+                chooseOptions={chooseOptions}
                 uploadOptions={uploadOptions}
-                progressBarTemplate={progressBarTemplate}
                 cancelOptions={cancelOptions}
+                progressBarTemplate={progressBarTemplate}
                 chooseLabel="Choose Audio"
                 uploadLabel="Start Upload"
                 accept="audio/*"

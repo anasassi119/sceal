@@ -39,6 +39,9 @@ export default function Dashboard() {
         <img className="h-10 invert" src="https://anasassi.com/logo.png" alt="Anas Assi Logo"/>
     )
 
+    const endItems = <Avatar onClick={(e) => menuRef.current?.toggle(e)}
+                             label={initials} size="large" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} shape="circle" />
+
     const avatarMenuItems = [
         {
             label: 'Logout',
@@ -47,13 +50,10 @@ export default function Dashboard() {
         },
     ];
 
-    const endItems = <Avatar onClick={(e) => menuRef.current?.toggle(e)}
-                                   label={initials} size="large" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} shape="circle" />
     return (
         <div>
             <Menubar className="justify-between h-14" start={startItems} end={endItems}/>
             <Menu model={avatarMenuItems} popup ref={menuRef} />
-
             <TabView>
                 <TabPanel className="ml-1" header="Upload/Record Audio" leftIcon="pi pi-upload">
                     <UploadForm user={user} />

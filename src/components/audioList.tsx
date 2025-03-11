@@ -106,44 +106,46 @@ export default function AudioList({ user }: AudioListProps) {
         <div>
             <Toast ref={toast} />
             <ConfirmDialog />
-            <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                <thead className="bg-gray-400">
-                <tr>
-                    <th className="p-3 border-0">Audio Name</th>
-                    <th className="p-3 border-0">Play/Pause</th>
-                    <th className="p-3 border-0">Download</th>
-                    <th className="p-3 border-0">Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                {audios.map((audio, index) => (
-                    <tr
-                        key={audio.url}
-                        ref={index === audios.length - 1 ? lastRowRef : null}
-                        className={`border-0 ${
-                            index % 2 === 1 ? "bg-gray-200" : "bg-white"
-                        }`}
-                    >
-                        <td className="border-0 p-3 w-3/12">{audio.name}</td>
-                        <td className="border-0 p-3">
-                            <AudioPlayer name={audio.name} url={audio.url} />
-                        </td>
-                        <td className="border-0 p-3 w-1/12 text-center">
-                            <a href={`${audio.url}&dl=1`} download>
-                                <Button icon="pi pi-download" className="p-button-sm p-button-text" />
-                            </a>
-                        </td>
-                        <td className="border-0 p-3 w-1/12 text-center">
-                            <Button
-                                icon="pi pi-trash"
-                                className="p-button-danger p-button-sm p-button-text"
-                                onClick={() => confirmDelete(audio.url)}
-                            />
-                        </td>
+            <div className="max-w-full overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                    <thead className="bg-gray-400">
+                    <tr>
+                        <th className="p-3 border-0 w-3/12">Audio Name</th>
+                        <th className="p-3 border-0">Play/Pause</th>
+                        <th className="p-3 border-0 w-1/12">Download</th>
+                        <th className="p-3 border-0 w-1/12">Delete</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {audios.map((audio, index) => (
+                        <tr
+                            key={audio.url}
+                            ref={index === audios.length - 1 ? lastRowRef : null}
+                            className={`border-0 ${
+                                index % 2 === 1 ? "bg-gray-200" : "bg-white"
+                            }`}
+                        >
+                            <td className="border-0 p-3 w-3/12">{audio.name}</td>
+                            <td className="border-0 p-3">
+                                <AudioPlayer name={audio.name} url={audio.url} />
+                            </td>
+                            <td className="border-0 p-3 w-1/12 text-center">
+                                <a href={`${audio.url}&dl=1`} download>
+                                    <Button icon="pi pi-download" className="p-button-sm p-button-text" />
+                                </a>
+                            </td>
+                            <td className="border-0 p-3 w-1/12 text-center">
+                                <Button
+                                    icon="pi pi-trash"
+                                    className="p-button-danger p-button-sm p-button-text"
+                                    onClick={() => confirmDelete(audio.url)}
+                                />
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
 
             {isLoading && (
                 <div className="flex justify-center items-center gap-5 mt-4">

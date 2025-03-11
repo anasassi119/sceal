@@ -36,23 +36,34 @@ export default function AudioPlayer(audio: Audio) {
         return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
 
-    const togglePlayPause = () => {
-        if (wavesurferRef.current) {
-            if (isPlaying) {
-                wavesurferRef.current.pause();
-            } else {
-                wavesurferRef.current.play();
-            }
-        }
+    const playAudio = () => {
+        wavesurferRef?.current?.play();
+    };
+
+    const pauseAudio = () => {
+        wavesurferRef?.current?.pause();
     };
 
     return (
         <div className="w-full min-w-100 gap-2 grid items-center grid-cols-[50px_50px_1fr_50px]">
-            <Button
-                icon={isPlaying ? "pi pi-pause" : "pi pi-play"}
-                className="p-button-rounded w-12"
-                onClick={() => togglePlayPause()}
-            />
+            {isPlaying ? (
+                <Button
+                    icon="pi pi-pause"
+                    className="p-button-rounded w-12"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        pauseAudio();
+                    }}
+                />) : (
+                <Button
+                    icon="pi pi-play"
+                    className="p-button-rounded w-12"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        playAudio();
+                    }}
+                />
+            )}
             <span className="font-bold">{formatTime(currentTime)} </span>
             <WaveSurferPlayer
                 backend="MediaElement"
