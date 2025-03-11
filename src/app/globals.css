@@ -11,3 +11,7 @@
 .p-fileupload-row {
     overflow: auto;
 }
+
+.p-menubar-button {
+    display: none;
+}
