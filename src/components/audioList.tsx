@@ -21,7 +21,7 @@ interface AudioListProps {
 
 export default function AudioList({ user }: AudioListProps) {
     const [audios, setAudios] = useState<Audio[]>([]);
-    const fetchedFilesRef = useRef<Set<string>>(new Set()); // ✅ Track fetched files in a ref
+    const fetchedFilesRef = useRef<Set<string>>(new Set());
     const [nextPageToken, setNextPageToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
@@ -32,16 +32,16 @@ export default function AudioList({ user }: AudioListProps) {
            await fetchAudios();
         }
         fetchStuff()
-    }, [user]);
+    }, []);
 
     // 🔥 Fetch files with pagination and avoid duplicates
     const fetchAudios = async (pageToken: string | null = null) => {
-        if (!user || isLoading || (pageToken === null && audios.length > 0)) return; // ✅ Stop fetching if no nextPageToken
+        if (!user || isLoading || (pageToken === null && audios.length > 0)) return;
         setIsLoading(true);
 
         try {
             const storageRef = ref(storage, `audios/${user.uid}/`);
-            const options = { maxResults: 10, pageToken: pageToken || undefined };
+            const options = { maxResults: 5, pageToken: pageToken || undefined };
             const result = await list(storageRef, options);
 
             const audioPromises = result.items.map(async (item) => ({
@@ -56,11 +56,10 @@ export default function AudioList({ user }: AudioListProps) {
                 uniqueAudios.forEach(audio => fetchedFilesRef.current.add(audio.name));
             }
 
-            // ✅ Update nextPageToken properly
             if (result.nextPageToken) {
                 setNextPageToken(result.nextPageToken);
             } else {
-                setNextPageToken(null); // ✅ Ensure it's set to null when no more pages
+                setNextPageToken(null);
             }
 
         } catch (error) {
@@ -71,7 +70,7 @@ export default function AudioList({ user }: AudioListProps) {
     };
 
     const onLazyLoad = () => {
-        if (nextPageToken !== null && !isLoading) { // ✅ Prevent extra fetches
+        if (nextPageToken !== null && !isLoading) {
             fetchAudios(nextPageToken);
             console.log("rabbbb")
         }
@@ -97,7 +96,6 @@ export default function AudioList({ user }: AudioListProps) {
 
             setAudios((prevAudios) => prevAudios.filter(audio => audio.url !== filePath));
 
-            // ✅ Remove from fetchedFilesRef immediately
             fetchedFilesRef.current.delete(filePath);
 
             toast.current?.show({ severity: "success", summary: "Deleted", detail: "File removed successfully!" });
@@ -107,7 +105,6 @@ export default function AudioList({ user }: AudioListProps) {
         }
     };
 
-    // 🔥 Render Each Row in Virtual Scroller
     const itemTemplate = (audio: Audio) => (
         <div className="grid grid-cols-[200px_1fr_120px] gap-5 items-center w-full border-b-1 border-blue-200">
             <div className="overflow-hidden">
@@ -148,9 +145,10 @@ export default function AudioList({ user }: AudioListProps) {
                 className="w-full h-130"
                 ref={scrollerRef}
                 items={audios}
-                itemSize={120} // Adjust row height
+                itemSize={120}
                 lazy
                 delay={150}
+                orientation="vertical"
                 onLazyLoad={onLazyLoad}
                 itemTemplate={itemTemplate}
                 loading={isLoading}
