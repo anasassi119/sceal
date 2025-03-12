@@ -149,7 +149,7 @@ export default function AudioList({ user }: AudioListProps) {
                     </tbody>
                 </table>
             </div>
-            <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-3/4 w-full h-20
+            <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-[135%] w-full h-15
                             pt-0 pb-0 pl-5 pr-5">
                 <AudioPlayer
                     className="relative"
