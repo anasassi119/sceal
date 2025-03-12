@@ -1,5 +1,7 @@
 "use client";
+import dynamic from 'next/dynamic';
 
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 import { useState, useEffect, useRef, useCallback } from "react";
 import { storage } from "@/lib/firebaseConfig";
 import { ref, list, getDownloadURL, deleteObject } from "firebase/storage";
@@ -11,7 +13,6 @@ import AudioPlayer, {RHAP_UI} from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {OverlayPanel} from "primereact/overlaypanel";
-import Lottie from "lottie-react";
 import playingAnimation from '../app/animations/playing.json';
 import { Ripple } from "primereact/ripple";
 
