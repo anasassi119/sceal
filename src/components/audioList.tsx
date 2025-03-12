@@ -105,7 +105,7 @@ export default function AudioList({ user }: AudioListProps) {
             await deleteObject(fileRef);
             setAudios((prev) => prev.filter(audio => audio.url !== filePath));
             fetchedFilesRef.current.delete(filePath);
-            setPlayingNow(null)
+            // setPlayingNow(null)
             toast.current?.show({ severity: "success", summary: "Deleted", detail: "File removed successfully!" });
         } catch (error) {
             console.error("Error deleting file:", error);
