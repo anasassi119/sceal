@@ -122,7 +122,7 @@ export default function AudioList({ user }: AudioListProps) {
                     Hmm.. not audio yet, try uploading some!
                 </div>
             )}
-            <div className="max-w-full overflow-x-auto rounded-br-none rounded-bl-none">
+            <div className="max-w-full overflow-x-auto" style={{ maxHeight: "calc(100vh - 280px)", scrollbarWidth: "none" }}>
                 <table className="w-full border-collapse border border-gray-300 rounded-br-none rounded-bl-none
                 overflow-hidden">
                     <tbody>
@@ -130,8 +130,8 @@ export default function AudioList({ user }: AudioListProps) {
                         <tr
                             key={audio.url || index}
                             ref={index === audios.length - 1 ? lastRowRef : null}
-                            className={`border-0 h-15 ${
-                                index % 2 === 1 ? "bg-white" : "bg-gray-200"
+                            className={`border-0 border-gray-500 h-15 ${
+                                index % 2 === 1 ? "bg-white" : "bg-gray-100"
                             } hover:cursor-pointer p-ripple`}
                         >
                             <td onClick={() => {
