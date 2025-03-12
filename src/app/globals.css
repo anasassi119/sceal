@@ -28,6 +28,6 @@
     height: 60px;
 }
 
-.p-tabview-panel {
-    height: calc(100vh - 350px);
+.p-tabview-panels {
+    padding: 0;
 }

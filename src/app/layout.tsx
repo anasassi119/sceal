@@ -5,6 +5,7 @@ import 'primereact/resources/themes/lara-light-blue/theme.css'; // theme
 import 'primereact/resources/primereact.min.css';                // core css
 import 'primeicons/primeicons.css';
 import {AuthProvider} from "@/components/AuthProvider";
+import { PrimeReactProvider } from "primereact/api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+      <PrimeReactProvider value={{ ripple: true }}>
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -36,5 +38,6 @@ export default function RootLayout({
       </AuthProvider>
       </body>
     </html>
+          </PrimeReactProvider>
   );
 }

@@ -11,6 +11,9 @@ import AudioPlayer, {RHAP_UI} from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {OverlayPanel} from "primereact/overlaypanel";
+import Lottie from "lottie-react";
+import playingAnimation from '../app/animations/playing.json';
+import { Ripple } from "primereact/ripple";
 
 interface Audio {
     name: string;
@@ -30,6 +33,7 @@ export default function AudioList({ user }: AudioListProps) {
     const [playingNow, setPlayingNow] = useState<Audio | null>(null);
     const toast = useRef<Toast>(null);
     const observerRef = useRef<IntersectionObserver | null>(null);
+    const [selectedAudio, setSelectedAudio] = useState<Audio | null>(null);
 
     useEffect(() => {
         fetchAudios();
@@ -96,6 +100,7 @@ export default function AudioList({ user }: AudioListProps) {
     const deleteFile = async (filePath: string) => {
         try {
             const fileRef = ref(storage, filePath);
+            console.log("fileRef", fileRef);
             await deleteObject(fileRef);
             setAudios((prev) => prev.filter(audio => audio.url !== filePath));
             fetchedFilesRef.current.delete(filePath);
@@ -111,38 +116,57 @@ export default function AudioList({ user }: AudioListProps) {
         <div>
             <Toast ref={toast} />
             <ConfirmDialog />
-            <OverlayPanel ref={overlayRef}>
-                <div>
-                    <a href={`${playingNow?.url || ''}&dl=1`} download>
-                        <Button icon="pi pi-download" className="p-button-sm p-button-text" />
-                    </a>
-                    <Button
-                        icon="pi pi-trash"
-                        className="p-button-danger p-button-sm p-button-text"
-                        onClick={() => confirmDelete(playingNow?.url || '')}
-                    />
+            {(!isLoading && audios.length === 0 )&& (
+                <div className="flex h-[calc(100vh-300px)] w-full justify-center items-center">
+                    Hmm.. not audio yet, try uploading some!
                 </div>
-            </OverlayPanel>
-            <div className="max-w-full overflow-x-auto rounded-lg rounded-br-none rounded-bl-none">
-                <table className="w-full border-collapse border border-gray-300 rounded-lg rounded-br-none rounded-bl-none
+            )}
+            <div className="max-w-full overflow-x-auto rounded-br-none rounded-bl-none">
+                <table className="w-full border-collapse border border-gray-300 rounded-br-none rounded-bl-none
                 overflow-hidden">
                     <tbody>
                     {audios.map((audio, index) => (
                         <tr
-                            key={audio.url}
+                            key={audio.url || index}
                             ref={index === audios.length - 1 ? lastRowRef : null}
                             className={`border-0 h-15 ${
                                 index % 2 === 1 ? "bg-white" : "bg-gray-200"
-                            } hover:cursor-pointer`}
-                            onClick={() => {
+                            } hover:cursor-pointer p-ripple`}
+                        >
+                            <td onClick={() => {
                                 setPlayingNow(audio)
                             }
-                        }
-                        >
-                            <td className="border-0 p-3 w-3/12 overflow-hidden whitespace-nowrap relative">
+                            }
+                                className="border-0 p-3 w-10/12 overflow-hidden whitespace-nowrap relative">
                                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-scroll">
-                                    {audio.name}
+                                        {audio.name}
                                 </div>
+                                <Ripple />
+                            </td>
+                            <td className="border-0 p-3 flex h-14 justify-end items-center">
+                                {playingNow?.url === audio.url && (
+                                    <Lottie style={{height: "32px", display: "flex", alignItems: "center"}}
+                                            animationData={playingAnimation} loop={true} />
+                                )}
+                                <button style={{color: "#868686"}} className="text-xl cursor-pointer h-full"
+                                        onClick={(e) => {
+                                            setSelectedAudio(audio)
+                                            overlayRef.current?.toggle(e)
+                                        }}>
+                                    <HiOutlineDotsVertical />
+                                </button>
+                                <OverlayPanel ref={overlayRef}>
+                                    <div>
+                                        <a href={`${selectedAudio?.url || ''}&dl=1`} download>
+                                            <Button icon="pi pi-download" className="p-button-sm p-button-text" />
+                                        </a>
+                                        <Button
+                                            icon="pi pi-trash"
+                                            className="p-button-danger p-button-sm p-button-text"
+                                            onClick={() => confirmDelete(selectedAudio?.url || '')}
+                                        />
+                                    </div>
+                                </OverlayPanel>
                             </td>
                         </tr>
                     ))}
@@ -150,7 +174,7 @@ export default function AudioList({ user }: AudioListProps) {
                 </table>
             </div>
             <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-[135%] w-full h-15
-                            pt-0 pb-0 pl-5 pr-5">
+                            pt-0 pb-0 pl-0 pr-0">
                 <AudioPlayer
                     className="relative"
                     autoPlayAfterSrcChange
@@ -166,12 +190,6 @@ export default function AudioList({ user }: AudioListProps) {
                     }
                     customControlsSection={[
                         RHAP_UI.ADDITIONAL_CONTROLS,
-                        <div className="fixed left-10" key="extra-controls">
-                            <button style={{color: "#868686"}} className="text-xl cursor-pointer"
-                                    onClick={(e) => overlayRef.current?.toggle(e)}>
-                                <HiOutlineDotsVertical />
-                            </button>
-                        </div>,
                         RHAP_UI.MAIN_CONTROLS,
                         RHAP_UI.VOLUME_CONTROLS,
                     ]}
