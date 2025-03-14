@@ -114,7 +114,7 @@ export default function AudioList({ user }: AudioListProps) {
     };
 
     return (
-        <div>
+        <div className="h-[calc(100vh-140px)]">
             <Toast ref={toast} />
             <ConfirmDialog />
             {(!isLoading && audios.length === 0 )&& (
@@ -122,7 +122,7 @@ export default function AudioList({ user }: AudioListProps) {
                     Hmm.. not audio yet, try uploading some!
                 </div>
             )}
-            <div className="max-w-full overflow-x-auto" style={{ maxHeight: "calc(100vh - 280px)", scrollbarWidth: "none" }}>
+            <div className="max-w-full overflow-x-auto" style={{ height: "75%", scrollbarWidth: "none" }}>
                 <table className="w-full border-collapse border border-gray-300 rounded-br-none rounded-bl-none
                 overflow-hidden">
                     <tbody>
@@ -174,8 +174,7 @@ export default function AudioList({ user }: AudioListProps) {
                     </tbody>
                 </table>
             </div>
-            <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-[135%] w-full h-15
-                            pt-0 pb-0 pl-0 pr-0">
+            <div className="w-full flex" style={{height: "25%"}}>
                 <AudioPlayer
                     className="relative"
                     autoPlayAfterSrcChange
@@ -197,7 +196,7 @@ export default function AudioList({ user }: AudioListProps) {
                 />
             </div>
             {isLoading && (
-                <div className="flex justify-center items-center gap-5 mt-4">
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-5 mt-4">
                     <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
                     Loading...
                 </div>
