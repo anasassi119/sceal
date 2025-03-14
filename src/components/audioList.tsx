@@ -114,7 +114,7 @@ export default function AudioList({ user }: AudioListProps) {
     };
 
     return (
-        <div className="h-[calc(100vh-137px)] flex flex-col">
+        <div className="fixed inset-0 top-[137px] bottom-0 flex flex-col overflow-hidden">
             <Toast ref={toast} />
             <ConfirmDialog />
             {(!isLoading && audios.length === 0 )&& (
