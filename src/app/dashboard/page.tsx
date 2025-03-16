@@ -16,8 +16,10 @@ export default function Dashboard() {
     const router = useRouter();
     const { user, logout, loading } = useAuth();
     const menuRef = useRef<Menu>(null);
-    const names = user?.displayName?.split(" ") || ["U", "U"];
-    const initials = names.map((name) => name[0].toUpperCase()).join("");
+    const names = user?.displayName?.trim().split(" ") || ["U", "U"]; // Handle missing name
+    const initials = names.length > 1
+        ? names.map((name) => name[0].toUpperCase()).join("")  // Multiple words (e.g., "John Doe" → "JD")
+        : names[0][0].toUpperCase(); // Single word (e.g., "John" → "J")
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -46,8 +48,12 @@ export default function Dashboard() {
                 <i className="pi pi-spin pi-spinner" style={{ fontSize: '24px' }}></i>
             </div>
         )}
-        <Avatar onClick={(e) => menuRef.current?.toggle(e)}
-                label={initials} size="large" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} shape="circle" />
+        <Avatar
+            onClick={(e) => menuRef.current?.toggle(e)}
+            image={user?.photoURL || undefined}
+            label={!user?.photoURL ? initials : undefined}
+            size="large" style={{ backgroundColor: '#2196F3', color: '#ffffff' }}
+            shape="circle" />
     </div>
 
     const avatarMenuItems = [
