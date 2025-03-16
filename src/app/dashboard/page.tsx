@@ -16,10 +16,10 @@ export default function Dashboard() {
     const router = useRouter();
     const { user, logout, loading } = useAuth();
     const menuRef = useRef<Menu>(null);
-    const names = user?.displayName?.trim().split(" ") || ["U", "U"]; // Handle missing name
+    const names = user?.displayName?.trim().split(" ") || ["U", "U"];
     const initials = names.length > 1
-        ? names.map((name) => name[0].toUpperCase()).join("")  // Multiple words (e.g., "John Doe" → "JD")
-        : names[0][0].toUpperCase(); // Single word (e.g., "John" → "J")
+        ? names.map((name) => name[0].toUpperCase()).join("")
+        : names[0][0].toUpperCase();
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
