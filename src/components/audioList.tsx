@@ -138,7 +138,7 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
                                 setPlayingNow(audio)
                             }
                             }
-                                className="border-0 p-3 w-10/12 overflow-hidden whitespace-nowrap relative">
+                                className="border-0 p-3 w-[90%] overflow-hidden whitespace-nowrap relative">
                                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-scroll">
                                         {audio.name}
                                 </div>

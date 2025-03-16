@@ -31,3 +31,7 @@
 .p-tabview-panels {
     padding: 0;
 }
+
+.p-overlaypanel:before, .p-overlaypanel:after {
+    display: none;
+}
