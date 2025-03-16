@@ -12,6 +12,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import {Menu} from "primereact/menu";
 
 export default function Dashboard() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
     const { user, logout, loading } = useAuth();
     const menuRef = useRef<Menu>(null);
@@ -39,8 +40,15 @@ export default function Dashboard() {
         <img className="h-10 invert" src="https://anasassi.com/logo.png" alt="Anas Assi Logo"/>
     )
 
-    const endItems = <Avatar onClick={(e) => menuRef.current?.toggle(e)}
-                             label={initials} size="large" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} shape="circle" />
+    const endItems = <div className="flex flex-nowrap gap-5">
+        {isLoading && (
+            <div className="flex justify-center items-center">
+                <i className="pi pi-spin pi-spinner" style={{ fontSize: '24px' }}></i>
+            </div>
+        )}
+        <Avatar onClick={(e) => menuRef.current?.toggle(e)}
+                label={initials} size="large" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} shape="circle" />
+    </div>
 
     const avatarMenuItems = [
         {
@@ -60,7 +68,7 @@ export default function Dashboard() {
                 </TabPanel>
                 <TabPanel header="My Uploaded Audios" leftIcon="pi pi-headphones">
                     <div className="overflow-auto" style={{scrollbarWidth: "none" }}>
-                        <AudioList user={user} />
+                        <AudioList user={user} isLoading={isLoading} setIsLoading={setIsLoading} />
                     </div>
                 </TabPanel>
             </TabView>

@@ -23,14 +23,15 @@ interface Audio {
 
 interface AudioListProps {
     user: User | null;
+    isLoading: boolean;
+    setIsLoading: (isLoading: boolean) => void;
 }
 
-export default function AudioList({ user }: AudioListProps) {
+export default function AudioList({ user, isLoading, setIsLoading }: AudioListProps) {
     const [audios, setAudios] = useState<Audio[]>([]);
     const fetchedFilesRef = useRef<Set<string>>(new Set());
     const overlayRef = useRef<OverlayPanel | null>(null);
     const [nextPageToken, setNextPageToken] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [playingNow, setPlayingNow] = useState<Audio | null>(null);
     const toast = useRef<Toast>(null);
     const observerRef = useRef<IntersectionObserver | null>(null);
@@ -63,7 +64,6 @@ export default function AudioList({ user }: AudioListProps) {
             }
 
             setNextPageToken(result.nextPageToken || null);
-            console.log(result.nextPageToken);
         } catch (error) {
             console.error("Error fetching files:", error);
         }
@@ -195,12 +195,6 @@ export default function AudioList({ user }: AudioListProps) {
                     ]}
                 />
             </div>
-            {isLoading && (
-                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-5 mt-4">
-                    <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
-                    Loading...
-                </div>
-            )}
         </div>
     );
 }

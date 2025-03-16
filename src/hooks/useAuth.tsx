@@ -33,7 +33,7 @@ export function useAuth() {
                 try {
                     const result = await getRedirectResult(auth);
                     if (result) {
-                        console.log("Redirect sign-in successful");
+                        // console.log("Redirect sign-in successful");
                         // Redirect completed successfully
                     }
                 } catch (error) {
@@ -49,8 +49,8 @@ export function useAuth() {
 
     // Set up auth state listener
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            console.log("Auth State Changed:", user ? "User logged in" : "No user");
+        const unsubscribe = onAuthStateChanged(auth, () => {
+            // console.log("Auth State Changed:", user ? "User logged in" : "No user");
             setInitialized(true);
         });
 
