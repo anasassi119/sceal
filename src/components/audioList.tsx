@@ -87,6 +87,21 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
         [isLoading, nextPageToken]
     );
 
+    useEffect(() => {
+        if (playingNow) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: playingNow.name,
+                artist: "Anas's Audio Player",
+                album: "Uploaded Audio",
+                artwork: [
+                    { src: "/96x96.png", sizes: "96x96", type: "image/png" },
+                    { src: "/128x128.png", sizes: "128x128", type: "image/png" },
+                    { src: "/192x192.png", sizes: "192x192", type: "image/png" }
+                ]
+            });
+        }
+    }, [playingNow]);
+
     const confirmDelete = (filePath: string) => {
         confirmDialog({
             message: "Are you sure you want to delete this file?",

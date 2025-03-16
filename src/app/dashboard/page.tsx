@@ -39,7 +39,7 @@ export default function Dashboard() {
     }
 
     const startItems = (
-        <img className="h-10 invert" src="https://anasassi.com/logo.png" alt="Anas Assi Logo"/>
+        <img className="h-10 invert" src="/logo.png" alt="Anas Assi Logo"/>
     )
 
     const endItems = <div className="flex flex-nowrap gap-5">
