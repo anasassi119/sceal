@@ -36,6 +36,7 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
     const toast = useRef<Toast>(null);
     const observerRef = useRef<IntersectionObserver | null>(null);
     const [selectedAudio, setSelectedAudio] = useState<Audio | null>(null);
+    const [queuedAudio, setQueuedAudio] = useState<Audio | null>(null);
 
     useEffect(() => {
         fetchAudios();
@@ -104,6 +105,13 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
         }
     }, [playingNow]);
 
+    useEffect(() => {
+        if (queuedAudio) {
+            setPlayingNow(queuedAudio);
+            setQueuedAudio(null);
+        }
+    }, [queuedAudio]);
+
     const confirmDelete = (filePath: string) => {
         confirmDialog({
             message: "Are you sure you want to delete this file?",
@@ -153,7 +161,7 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
                         >
                             <td onClick={() => {
                                 setPlayingNow(null);
-                                setTimeout(() => setPlayingNow(audio), 0);
+                                setQueuedAudio(audio);
                             }
                             }
                                 className="border-0 p-3 w-[90%] overflow-hidden whitespace-nowrap relative">
