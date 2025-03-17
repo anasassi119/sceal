@@ -129,7 +129,7 @@ export default function UploadForm({ user }: UploadFormProps) {
                 progressBarTemplate={progressBarTemplate}
                 chooseLabel="Choose"
                 uploadLabel="Upload"
-                accept="audio/*"
+                accept="audio/mpeg, audio/wav, audio/ogg, audio/aac, audio/x-m4a, audio/flac, audio/*"
                 uploadHandler={customUploadAudio}
                 onSelect={(e) => {
                     const file = e.files[0];
