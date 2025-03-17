@@ -152,7 +152,8 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
                             } hover:cursor-pointer p-ripple`}
                         >
                             <td onClick={() => {
-                                setPlayingNow(audio)
+                                setPlayingNow(null);
+                                setTimeout(() => setPlayingNow(audio), 0);
                             }
                             }
                                 className="border-0 p-3 w-[90%] overflow-hidden whitespace-nowrap relative">
@@ -163,7 +164,7 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
                             </td>
                             <td className="border-0 p-3 flex h-14 justify-end items-center">
                                 {playingNow?.url === audio.url && (
-                                    <Lottie style={{height: "32px", display: "flex", alignItems: "center"}}
+                                    <Lottie style={{height: "32px", width: "48px",display: "flex", alignItems: "center"}}
                                             animationData={playingAnimation} loop={true} />
                                 )}
                                 <button style={{color: "#868686"}} className="text-xl cursor-pointer h-full"
