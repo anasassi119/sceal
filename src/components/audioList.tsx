@@ -144,7 +144,7 @@ export default function AudioList({ user, isLoading, setIsLoading }: AudioListPr
             <ConfirmDialog />
             {(!isLoading && audios.length === 0 )&& (
                 <div className="flex h-[calc(100vh-300px)] w-full justify-center items-center">
-                    Hmm.. not audio yet, try uploading some!
+                    Hmm.. no audio yet, try uploading some!
                 </div>
             )}
             <div className="max-w-full overflow-auto grow" style={{scrollbarWidth: "none" }}>
